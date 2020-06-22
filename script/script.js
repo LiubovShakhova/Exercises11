@@ -4,15 +4,12 @@ const todoControl = document.querySelector('.todo-control'),
     headerInput = document.querySelector('.header-input'),
     todoList = document.querySelector('.todo-list'),
     addBtn = document.getElementById('add'),
-    removeBtn = document.querySelector('.todo-remove'),
     todoCompleted = document.querySelector('.todo-completed');
-
-const todoData = [];
+let todoData = [];
 
 const render = function() {
     todoList.textContent = '';
     todoCompleted.textContent = '';
-
 
     todoData.forEach(function(item) {
         const li = document.createElement('li');
@@ -40,21 +37,40 @@ const render = function() {
             item.completed = !item.completed;
             render();
         });
-
+        //5) Удаление дел на кнопку КОРЗИНА
+        const removeBtn = li.querySelector('.todo-remove');
+        removeBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            li.remove();
+            localStorage.removeItem('mykey');
+            event.preventDefault();
+      });
     });
+
 };
 
 todoControl.addEventListener('submit', function(event) {
     event.preventDefault();
-
-    const newTodo  = {
+    let newTodo  = {
       value: headerInput.value,
       completed: false
     };
-
     todoData.push(newTodo);
-
     render();
+    
 });
 
+//7) Дела из localStorage подгружаться должны автоматически при загрузки странице
+//6) Сохранять данные о делах в localStorage (советую в виде массива)
+const getData = function(){
+  if (localStorage.getItem('mykey')) {
+    todoData = JSON.parse(localStorage.getItem('mykey'));
+  }
+};
+todoControl.addEventListener('submit', function() {
+  event.preventDefault();
+  localStorage.setItem('mykey', JSON.stringify(todoData));
+  getData();
+});
+getData();
 render();
