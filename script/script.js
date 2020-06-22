@@ -51,10 +51,15 @@ const render = function() {
 
 todoControl.addEventListener('submit', function(event) {
     event.preventDefault();
+    
+    let res;
     let newTodo  = {
       value: headerInput.value,
       completed: false
     };
+    if(document.querySelector('.todo-complete')) {
+      res = true;
+    }
     todoData.push(newTodo);
     render();
     
