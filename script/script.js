@@ -11,7 +11,7 @@ const render = function() {
     todoList.textContent = '';
     todoCompleted.textContent = '';
 
-    todoData.forEach(function(item) {
+    todoData.forEach((item, index) => {
         const li = document.createElement('li');
         li.classList.add('todo-item');
 
@@ -35,15 +35,15 @@ const render = function() {
         const todoComplete = li.querySelector('.todo-complete');
         todoComplete.addEventListener('click', function() {
             item.completed = !item.completed;
+            localStorage.setItem('mykey', JSON.stringify(todoData));  
             render();
         });
         //5) Удаление дел на кнопку КОРЗИНА
         const removeBtn = li.querySelector('.todo-remove');
-        removeBtn.addEventListener('click', function(event) {
-            event.preventDefault();
-            li.remove();
-            localStorage.removeItem('mykey');
-            event.preventDefault();
+        removeBtn.addEventListener('click', function() {
+          todoData.splice(index, 1);
+          localStorage.setItem('mykey', JSON.stringify(todoData));  
+          render();
       });
     });
 
@@ -51,31 +51,26 @@ const render = function() {
 
 todoControl.addEventListener('submit', function(event) {
     event.preventDefault();
-    
-    let res;
-    let newTodo  = {
+    if(headerInput.value === '') {
+      return;
+    }
+    const newTodo  = {
       value: headerInput.value,
       completed: false
     };
-    if(document.querySelector('.todo-complete')) {
-      res = true;
-    }
     todoData.push(newTodo);
+    headerInput.value = '';
     render();
+    localStorage.setItem('mykey', JSON.stringify(todoData));
     
 });
-
-//7) Дела из localStorage подгружаться должны автоматически при загрузки странице
-//6) Сохранять данные о делах в localStorage (советую в виде массива)
+//Сохранять данные о делах в localStorage
 const getData = function(){
   if (localStorage.getItem('mykey')) {
     todoData = JSON.parse(localStorage.getItem('mykey'));
   }
-};
-todoControl.addEventListener('submit', function() {
-  event.preventDefault();
-  localStorage.setItem('mykey', JSON.stringify(todoData));
   getData();
-});
-getData();
-render();
+  render();
+};
+
+
